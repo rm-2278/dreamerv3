@@ -9,6 +9,27 @@ sys.path.insert(0, str(folder.parent))
 sys.path.insert(1, str(folder.parent.parent))
 __package__ = folder.name
 
+# --- Start of Patch ---
+try:
+    import wandb
+    import numpy as np
+    _original_wandb_video = wandb.Video
+
+    def _patched_wandb_video(data_or_path, *args, **kwargs):
+        if isinstance(data_or_path, np.ndarray):
+            # Handle channel-last format: (T, H, W, 1) -> (T, H, W, 3)
+            if data_or_path.ndim == 4 and data_or_path.shape[-1] == 1:
+                data_or_path = np.repeat(data_or_path, 3, axis=-1)
+            # Handle channel-first format: (T, 1, H, W) -> (T, 3, H, W)
+            elif data_or_path.ndim == 4 and data_or_path.shape[1] == 1:
+                data_or_path = np.repeat(data_or_path, 3, axis=1)
+        return _original_wandb_video(data_or_path, *args, **kwargs)
+
+    wandb.Video = _patched_wandb_video
+except ImportError:
+    pass
+# --- End of Patch ---
+
 import elements
 import embodied
 import numpy as np
