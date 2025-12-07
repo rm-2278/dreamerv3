@@ -35,7 +35,7 @@ RUN pip install https://github.com/danijar/minerl/releases/download/v0.4.4-patch
 RUN chown -R 1000:root /venv/lib/python3.11/site-packages/minerl
 
 # Requirements
-RUN pip install jax[cuda]==0.5.0
+RUN pip install jax[cuda12] -f https://storage.googleapis.com/jax-releases/jax_releases.html
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
