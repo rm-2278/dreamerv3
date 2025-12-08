@@ -88,18 +88,19 @@ sudo dmesg -T | grep -i "killed"
 ```
 
 JAX and TensorFlow use shared memory for parallel data processing. Docker defaults to 64MB, which is too small. Added --shm-size=4gb (or higher, e.g., 8gb) to command as below.
+(Also changed task to crafter.)
 
 ```
 docker run -it --rm --gpus all \
-  --shm-size=8gb \
+  --shm-size=14gb \
   -e XLA_FLAGS="--xla_gpu_use_driver_ptx_compilation=true" \
   -e WANDB_API_KEY=4cd757324fc872accf3226af5faf997bdbfe08df \
   -e WANDB_DISABLE_VIDEO=1 \
-  -v ~/GitHub/dreamerv3/dreamer_logs:/app/logdir \
+  -v ~/GitHub/dreamerv3/dreamer_logs/crafter:/app/logdir \
   dreamerv3:latest \
   python /app/dreamerv3/main.py \
     --logdir /app/logdir/gpu_run \
-    --configs atari size50m \
+    --configs crafter size50m \
     --jax.compute_dtype float32 \
     --logger.outputs wandb
 ```
